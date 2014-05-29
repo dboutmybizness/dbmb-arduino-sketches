@@ -15,6 +15,10 @@ int b5State = 0;
 
 int aValue = 0;
 int whichPressed = 0;
+int live_package = 0;
+int last_package = 999;
+
+int b1,b2,b3,b4,b5 = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -44,18 +48,107 @@ void loop(){
     ledLOW();
     return;
   }
+  //determine which package to use
+  live_package = getLivePackage(aValue);
+  //sPrinter("live Pkg: " + String(live_package));
   
   whichPressed = chkWhichPressed();
-  //Serial.println("Pressing " + String(whichPressed));
+  //sPrinter("Pressing " + String(whichPressed));
   
-  if ( aValue > 512 ){
-    Serial.println("holla -- " + String(aValue));
-  } else {
-
-  }
-  Serial.println("1 pressed");
+  prepButton(whichPressed);
   ledHIGH();
+  delay(100);
+}
 
+
+
+/** Functions **/
+
+//should be a text file or a library that holds these values
+void pushButtonAction(int item){
+  switch (item) {
+    case 1:
+      sPrinter("ctrl + c == Copy");
+      break;
+    case 2:
+      sPrinter("ctrl + p == Paste");
+      break;
+    case 3:
+      sPrinter("Home");
+      break;
+    case 4:
+      sPrinter("End");
+      break;
+    default:
+      sPrinter("I Love you Sidjay");
+      break;
+  }
+}
+
+void prepButton(int pbutton){
+  switch (pbutton){
+    case 1:
+      pushButtonAction(b1);
+      break;
+    case 2:
+      pushButtonAction(b2);
+      break;
+    case 3:
+      pushButtonAction(b3);
+      break;
+    case 4:
+      pushButtonAction(b4);
+      break;
+    case 5:
+      pushButtonAction(b5);
+      break;
+  }
+
+}
+
+// update buttons
+void setUpLivePKG(int live_p){
+  if ( live_p == 0 ){
+    setButtons(0,1,2,3,4);
+  } else if ( live_p == 1 ){
+    setButtons(2,4,2,3,4);
+  } else if ( live_p == 2 ){
+    setButtons(4,1,2,2,4);
+  } else if ( live_p == 3 ){
+    setButtons(1,1,2,1,4);
+  } else if ( live_p == 4 ){
+    setButtons(3,1,2,3,4);
+  }
+  
+}
+void setButtons(int b1val, int b2val, int b3val, int b4val, int b5val){
+   b1 = b1val;
+   b2 = b2val;
+   b3 = b3val;
+   b4 = b4val;
+   b5 = b5val;
+}
+
+void sPrinter(String str){
+  Serial.println(str); 
+}
+
+int getLivePackage(int aVal){
+  int pkg = live_package;
+  
+  if ( aVal <= 204 ) pkg = 0;
+  else if ( aVal >= 205 && aVal <= 410 ) pkg = 1;
+  else if ( aVal >= 411 && aVal <= 614 ) pkg = 2;
+  else if ( aVal >= 615 && aVal <= 819 ) pkg = 3;
+  else if ( aVal >= 820 ) pkg = 4;
+  
+  if (last_package != pkg){
+    setUpLivePKG(pkg);
+    last_package = pkg;
+    sPrinter("New Package ---- "+ String(pkg));
+  }
+  
+  return pkg;
 }
 
 int chkWhichPressed(){
