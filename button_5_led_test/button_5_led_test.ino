@@ -4,12 +4,17 @@ const int butt3Pin = 10;
 const int butt4Pin = 9;
 const int butt5Pin = 8;
 const int ledPin =  13;      // the number of the LED pin
+const int aPin = A0;
+
 
 int b1State = 0;
 int b2State = 0;
 int b3State = 0;
 int b4State = 0;
 int b5State = 0;
+
+int aValue = 0;
+int whichPressed = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -24,6 +29,7 @@ void setup() {
 }
 
 void loop(){
+  aValue = analogRead(aPin);
   b1State = digitalRead(butt1Pin);
   b2State = digitalRead(butt2Pin);
   b3State = digitalRead(butt3Pin);
@@ -31,37 +37,45 @@ void loop(){
   b5State = digitalRead(butt5Pin);
 
   int any_pressed = 0;
-  any_pressed = (
-    b1State + b2State + b3State + b4State + b5State
-  );
+  whichPressed = 0;
+  any_pressed = buttPressed();
 
-  if ( any_pressed > 0){
-    Serial.println("1 pressed");
-    digitalWrite(ledPin, HIGH);
-  } else {
-    digitalWrite(ledPin, LOW);
+  if ( any_pressed < 1){
+    ledLOW();
+    return;
   }
-
-/*
   
-  // read the state of the pushbutton value:
-  buttonState = digitalRead(buttonPin);
-  button2State = digitalRead(but2Pin);
-  // check if the pushbutton is pressed.
-  // if it is, the buttonState is HIGH:
-  if (buttonState == HIGH || button2State == HIGH) {
-    if ( buttonState == HIGH && button2State == HIGH){
-      Serial.println("both pressed");
-      digitalWrite(ledPin, LOW);
-    } else {
-    // turn LED on:
-      Serial.println("1 pressed");
-      digitalWrite(ledPin, HIGH);  
-    }
-  } 
-  else {
-    // turn LED off:
-    digitalWrite(ledPin, LOW); 
+  whichPressed = chkWhichPressed();
+  //Serial.println("Pressing " + String(whichPressed));
+  
+  if ( aValue > 512 ){
+    Serial.println("holla -- " + String(aValue));
+  } else {
+
   }
-*/
+  Serial.println("1 pressed");
+  ledHIGH();
+
+}
+
+int chkWhichPressed(){
+  int pressed = 0;
+  //check voltage for each to determine which is pressed
+  if ( b1State == HIGH ) pressed = 1;
+  else if ( b2State == HIGH ) pressed = 2;
+  else if ( b3State == HIGH ) pressed = 3;
+  else if ( b4State == HIGH ) pressed = 4;
+  else if ( b5State == HIGH ) pressed = 5;
+  return pressed;
+} 
+
+int buttPressed(){
+  return b1State + b2State + b3State + b4State + b5State;
+}
+
+void ledLOW(){
+  digitalWrite(ledPin, LOW);
+}
+void ledHIGH(){
+  digitalWrite(ledPin, HIGH);
 }
