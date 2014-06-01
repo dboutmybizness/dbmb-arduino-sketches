@@ -1,8 +1,8 @@
-const int butt1Pin = 12;
-const int butt2Pin = 11;
-const int butt3Pin = 10;
-const int butt4Pin = 9;
-const int butt5Pin = 8;
+const int butt1Pin = 6;
+const int butt2Pin = 5;
+const int butt3Pin = 4;
+const int butt4Pin = 3;
+const int butt5Pin = 2;
 const int ledPin =  13;      // the number of the LED pin
 const int aPin = A0;
 
@@ -20,8 +20,10 @@ int last_package = 999;
 
 int b1,b2,b3,b4,b5 = 0;
 
+
 void setup() {
   Serial.begin(9600);
+  Keyboard.begin();
   pinMode(ledPin, OUTPUT);  //LED
 
   // initialize the pushbutton pin as an input:
@@ -33,6 +35,7 @@ void setup() {
 }
 
 void loop(){
+
   aValue = analogRead(aPin);
   b1State = digitalRead(butt1Pin);
   b2State = digitalRead(butt2Pin);
@@ -57,7 +60,7 @@ void loop(){
   
   prepButton(whichPressed);
   ledHIGH();
-  delay(100);
+  delay(300);
 }
 
 
@@ -68,19 +71,24 @@ void loop(){
 void pushButtonAction(int item){
   switch (item) {
     case 1:
-      sPrinter("ctrl + c == Copy");
+      sPrinter("Blue");
+      Keyboard.write(65);
       break;
     case 2:
-      sPrinter("ctrl + p == Paste");
+      sPrinter("Yellow");
+      Keyboard.write(64);
       break;
     case 3:
-      sPrinter("Home");
+      sPrinter("Black");
+      Keyboard.write(66);
       break;
     case 4:
-      sPrinter("End");
+      sPrinter("Green");
+      Keyboard.write(68);
       break;
     default:
-      sPrinter("I Love you Sidjay");
+      sPrinter("Negro");
+      Keyboard.write(70);
       break;
   }
 }
@@ -146,6 +154,7 @@ int getLivePackage(int aVal){
     setUpLivePKG(pkg);
     last_package = pkg;
     sPrinter("New Package ---- "+ String(pkg));
+   
   }
   
   return pkg;
